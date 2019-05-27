@@ -135,33 +135,41 @@ public class Main {
                 {
                     try(Statement stmt = conn.createStatement())
                     {
-                        StringBuilder stringBuilder = new StringBuilder();
                         ResultSet resultSet = stmt.executeQuery("select * from drives;");
-                        while (resultSet.next())
+
+                        if (resultSet.next())
                         {
-                            stringBuilder.append(resultSet.getInt(1)).append('.');
-                            stringBuilder.append(resultSet.getString(2)).append('.');
-                            stringBuilder.append(resultSet.getFloat(3)).append(';');
+                            StringBuilder stringBuilder = new StringBuilder();
+                            stringBuilder.append(resultSet.getInt(1)).append(';');
+                            stringBuilder.append(resultSet.getString(2)).append(';');
+                            stringBuilder.append(resultSet.getFloat(3)).append("-"); // THIS WILL BE THE CONFIGURATION
+                            // ALWAYS WILL HAVE ID 0
+
+
+                            while (resultSet.next()) {
+                                stringBuilder.append(resultSet.getInt(1)).append('.');
+                                stringBuilder.append(resultSet.getString(2)).append('.');
+                                stringBuilder.append(resultSet.getFloat(3)).append(';');
+                            }
+                            stringBuilder.append('-');
+                            resultSet = stmt.executeQuery("select * from folders;");
+                            while (resultSet.next()) {
+                                stringBuilder.append(resultSet.getInt(1)).append('.');
+                                stringBuilder.append(resultSet.getString(2)).append('.');
+                                stringBuilder.append(resultSet.getInt(3)).append('.');
+                                stringBuilder.append(resultSet.getInt(4)).append(';');
+                            }
+                            stringBuilder.append('-');
+                            resultSet = stmt.executeQuery("select * from files;");
+                            while (resultSet.next()) {
+                                stringBuilder.append(resultSet.getInt(1)).append('.');
+                                stringBuilder.append(resultSet.getString(2)).append('.');
+                                stringBuilder.append(resultSet.getInt(3)).append('.');
+                                stringBuilder.append(resultSet.getInt(4)).append(';');
+                            }
+
+                            socketWriter.println(stringBuilder.toString());
                         }
-                        stringBuilder.append('-');
-                        resultSet = stmt.executeQuery("select * from folders;");
-                        while (resultSet.next())
-                        {
-                            stringBuilder.append(resultSet.getInt(1)).append('.');
-                            stringBuilder.append(resultSet.getString(2)).append('.');
-                            stringBuilder.append(resultSet.getInt(3)).append('.');
-                            stringBuilder.append(resultSet.getInt(4)).append(';');
-                        }
-                        stringBuilder.append('-');
-                        resultSet = stmt.executeQuery("select * from files;");
-                        while (resultSet.next())
-                        {
-                            stringBuilder.append(resultSet.getInt(1)).append('.');
-                            stringBuilder.append(resultSet.getString(2)).append('.');
-                            stringBuilder.append(resultSet.getInt(3)).append('.');
-                            stringBuilder.append(resultSet.getInt(4)).append(';');
-                        }
-                        socketWriter.println(stringBuilder.toString());
                     }
                     catch (SQLException e)
                     {

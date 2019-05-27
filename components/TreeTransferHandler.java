@@ -1,7 +1,9 @@
 package my.fileManager.components;
 
+import my.fileManager.core.File;
+import my.fileManager.core.Folder;
+
 import javax.swing.*;
-import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -35,9 +37,9 @@ public class TreeTransferHandler extends TransferHandler
         JTree.DropLocation dropLocation = (JTree.DropLocation) support.getDropLocation();
         TreePath treePath = dropLocation.getPath();
         Transferable dropped = support.getTransferable();
-        TreeNode node = null;
+        File node = null;
         try{
-            node = (TreeNode) dropped.getTransferData(DataFlavor.stringFlavor);
+            node = (File) dropped.getTransferData(DataFlavor.stringFlavor);
         }
         catch (IOException e)
         {
@@ -49,10 +51,11 @@ public class TreeTransferHandler extends TransferHandler
             System.err.println("Can't drop!");
             return false;
         }
-        ((MutableTreeNode) node.getParent()).remove(node);
-        TreeNode selectedNode = (TreeNode) treePath.getLastPathComponent();
+        ((Folder) node.getParent()).remove(node);
+        File selectedNode = (File) treePath.getLastPathComponent();
         selectedNode.add(node);
         mainFrame.repaint();
+        filesTree.repaint();
         return true;
     }
 
