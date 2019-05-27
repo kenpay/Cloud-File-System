@@ -53,7 +53,7 @@ CREATE TABLE `files` (
   `Id` int(11) NOT NULL,
   `Name` varchar(64) NOT NULL,
   `Size` int(11) NOT NULL,
-  `parentFolderId` int(11) NOT NULL
+  `ParentFolderId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
