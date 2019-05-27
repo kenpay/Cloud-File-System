@@ -1,81 +1,46 @@
 package my.fileManager.managers;
 
-import my.fileManager.components.TreeNode;
-
 import my.fileManager.core.*;
 
 import java.util.*;
 
 public class OperationManager {
-    public static Scanner reader = new Scanner(System.in);
+    //private static ArrayList<User> users = new ArrayList<>();
+    private static ArrayList<Drive> drives = new ArrayList<>();
 
-    //private static ArrayList<Drive> drives = new ArrayList<>(); // TODO : STORAGE
-    private static ArrayList<User> users = new ArrayList<>();
-    private static ArrayList<TreeNode> drives = new ArrayList<>();
+    private static Drive configuration;
 
-
-    public static void addToStorage(TreeNode drive)
+    public static void addToStorage(Drive drive)
     {
         drives.add(drive);
     }
 
-    public static ArrayList<TreeNode> getDrives()
+    public static ArrayList<Drive> getDrives()
     {
         return drives;
     }
 
-    /*
-    public static Drive getCoreDrive()
+    public static void setConfiguration(Drive Configuration)
     {
-        if (drives.size() > 0)
-            return drives.get(0);
-        return null;
-    }*/
-
-    public static User getUserByName(String name)
-    {
-        for (User user:users)
-            if (user.getName() == name)
-                return user;
-        return null;
+        configuration = Configuration;
     }
 
-    public static void addUser(User userToAdd)
+    public static Drive getConfigatuion()
+    {
+        return configuration;
+    }
+
+    /*/public static void addUser(User userToAdd)
     {
         users.add(userToAdd);
-    }
-
-    public static User getCoreUser()
-    {
-        if (users.size() > 0)
-            return users.get(0);
-        return null;
-    }
-
-    /*
-    public static void createUser()
-    {
-        System.out.println("Please enter user name:");
-        String userName = reader.next();
-        User user = getUserByName(userName);
-        if (user == null)
-        {
-            user = new User(userName);
-            addUser(user);
-            CSVUserManager.getInstance().add(user);
-            CSVManager.getInstance().stamp("createFolder", LocalDateTime.now().toString());
-            System.out.println("User successfully created!");
-        }
-        else
-            System.out.println("User already exists");
-    }
-    */
+    }*/
 
     /* DFS
     static private Folder getRecursivelyFolderById(int id, TreeNode folderIn)
     {
+    -- TODO TreeNode Ideology DFS
         for(File folder:folderIn.getFiles()){
-            if (folder instanceof Folder)
+            if (*older instanceof Folder)
             {
                 if (folder.getId() == id)
                     return (Folder) folder;
@@ -98,47 +63,30 @@ public class OperationManager {
         return null;
     } */ // HALFWAY - not finished at all
 
-    //BFS
 
-    public static TreeNode getFolderById(int id)
+    //BFS
+    public static Folder getFolderById(int id)
     {
-        Queue<TreeNode> queue = new LinkedList<>();
-        queue.addAll(drives);
+        Queue<File> queue = new LinkedList<>(drives);
         while (!queue.isEmpty())
         {
-            TreeNode node = queue.remove();
-            File nodeUserObject = (File) node.getUserObject();
-            if (nodeUserObject instanceof Folder)
+            File folder = queue.remove();
+            if (folder instanceof Folder)
             {
-                if (nodeUserObject.getId() == id)
-                    return node;
-                queue.addAll(Arrays.asList(((Folder) nodeUserObject).getFiles()));
+                if (folder.getId() == id)
+                    return (Folder) folder;
+                Vector children = ((Folder) folder).getChildren();
+                ArrayList<File> arrayList = new ArrayList<>();
+                for (Object child:children)
+                    if (child instanceof File)
+                        arrayList.add((File) child);
+                queue.addAll(arrayList);
             }
         }
         return null;
     }
 
-    /*static Drive getDrive(String driveName)
-    {
-        for(Drive drive:drives)
-            if(drive.getProperties().getName().equals(driveName))
-                return drive;
-        return null;
-    }*/
     /*
-    public static void createFolder()
-    {
-        System.out.println("Folder Name");
-        String folderName = reader.next();
-        System.out.println("Folder space");
-        double folderSpace = reader.nextDouble();
-        Folder folderToAdd = new Folder(folderName, folderSpace);
-        FileManager.addFileToCurrentTarget(folderToAdd);
-        CSVFolderManager.getInstance().add(folderToAdd);
-        CSVManager.getInstance().stamp("createFolder", LocalDateTime.now().toString());
-        System.out.println("Folder successfully created!");
-    }
-
     public static void createFile()
     {
         System.out.println("File Name");

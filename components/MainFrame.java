@@ -1,34 +1,16 @@
 package my.fileManager.components;
-import my.fileManager.core.Drive;
-import my.fileManager.core.Folder;
+
+import my.fileManager.Sockets.ClientSocket;
 import my.fileManager.managers.OperationManager;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
 
 
 public class MainFrame extends JFrame {
-
     private JTextField ipAddressTextField;
     private JButton button;
-    private JLabel errorLabel;
+    private JLabel errorLabel, enterIpAddressLabel;
 
     public MainFrame()
     {
@@ -36,17 +18,48 @@ public class MainFrame extends JFrame {
         setSize(600, 600);
         errorLabel = new JLabel();
         ipAddressTextField = new JTextField("localhost");
-        button = new Button("Connect",this, errorLabel, ipAddressTextField);
-        JLabel enterIpAddressLabel = new JLabel("Enter IP Address:");
+        enterIpAddressLabel = new JLabel("Enter IP Address:");
         errorLabel.setBounds(10, 10, 400, 10);
         errorLabel.setForeground(Color.RED);
         enterIpAddressLabel.setBounds(5, 505, 100, 30);
         ipAddressTextField.setBounds(5, 530, 575, 30);
+        button = new Button("Connect",this, errorLabel, ipAddressTextField);
         add(errorLabel);
         add(enterIpAddressLabel);
         add(button);
         add(ipAddressTextField);
         setLayout(null);
+        setResizable(false);
         setVisible(true);
+    }
+
+    public void connectionLost()
+    {
+        errorLabel.setText("Connection lost!");
+        ClientSocket.closeConnection();
+    }
+
+    public void displayFileSystem()
+    {
+        JButton addUser = new JButton("Add User");
+        addUser.setBounds(480, 10, 100, 20);
+        addUser.addActionListener(e -> {
+            String name = JOptionPane.showInputDialog("Username:");
+            String password;
+            if (name != null && name.length() > 3)
+            {
+                password = JOptionPane.showInputDialog("Password:");
+                if (password != null && password.length() > 3)
+                    ClientSocket.getInstance().createUser(name, password);
+            }
+
+        });
+        Tree filesTree = new Tree(OperationManager.getConfigatuion(), this);
+        add(addUser);
+        remove(button);
+        remove(ipAddressTextField);
+        remove(enterIpAddressLabel);
+        add(filesTree);
+
     }
 }

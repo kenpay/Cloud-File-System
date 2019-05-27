@@ -1,16 +1,10 @@
 package my.fileManager.core;
 
-import my.fileManager.components.TreeNode;
+import java.util.Vector;
 
 public class Folder extends File {
-    private TreeNode thisTreeNode;
-    private TreeNode[] files;
-    private Folder parentFolder;
-
-    public void setTreeNode(TreeNode treeNode)
-    {
-        thisTreeNode = treeNode;
-    }
+    //private TreeNode[] files;
+    //private Folder parentFolder;
 
     /*
     public Folder(FolderProperties properties, File[] fil)
@@ -35,16 +29,16 @@ public class Folder extends File {
     public Folder(String folderName, double fSpace)
     {
         super(new FolderProperties(0, folderName, fSpace));
-        this.files = new TreeNode[0];
-        ((FolderProperties) Properties()).setContainingXFiles(0);
+        //this.files = new TreeNode[0];
+        //((FolderProperties) Properties()).setContainingXFiles(0);
     }
 
 
     public Folder(int id, String folderName, double fSpace)
     {
         super(id, new FolderProperties(0, folderName, fSpace));
-        this.files = new TreeNode[0];
-        ((FolderProperties) Properties()).setContainingXFiles(0);
+        //this.files = new TreeNode[0];
+        //((FolderProperties) Properties()).setContainingXFiles(0);
     }
 
     /*
@@ -74,7 +68,7 @@ public class Folder extends File {
     }
     */
 
-    public TreeNode[] getFiles()
+    /*public TreeNode[] getFiles()
     {
         return this.files;
     }
@@ -82,30 +76,27 @@ public class Folder extends File {
     public Folder()
     {
         super();
+    }*/
+
+    public Vector getChildren()
+    {
+        return children;
     }
 
     private void add(File file)
     {
+        super.add(file);
         int numberOfFiles = ((FolderProperties) Properties()).getContainingXFiles();
-        TreeNode[] aFiles = new TreeNode[numberOfFiles+1];
-        System.arraycopy(files, 0, aFiles, 0, numberOfFiles);
-        aFiles[numberOfFiles] = new TreeNode(file);
-        if (file instanceof Folder)
-        {
-            ((Folder) file).parentFolder = this;
-            thisTreeNode.add(aFiles[numberOfFiles]);
-        }
-        this.files = aFiles;
-        file.Properties().setPath(Properties().getPath()+Properties().getName()+'/');
+        //file.Properties().setPath(Properties().getPath()+Properties().getName()+'/'); TreeSelectionPath ?
         Properties().setSize(Properties().Size() + file.Properties().Size());
-        Folder parent = parentFolder;
+        Folder parent = (Folder) super.parent;
         while (parent != null)
         {
             parent.Properties().setSize(parent.Properties().Size() + file.Properties().Size());
             ((FolderProperties) parent.Properties()).setSpace(((FolderProperties) parent.Properties()).getSpace() - file.Properties().Size());
             if (file instanceof Folder)
                 ((FolderProperties) parent.Properties()).setSpace(((FolderProperties) parent.Properties()).getSpace() - ((FolderProperties)file.Properties()).getSpace());
-            parent = parent.parentFolder;
+            parent = (Folder) parent.parent;
         }
         ((FolderProperties) Properties()).setSpace(((FolderProperties) Properties()).getSpace() - file.Properties().Size());
         if (file instanceof Folder)
@@ -129,31 +120,22 @@ public class Folder extends File {
 
     public void remove(File file)
     {
+        super.remove(file);
         int numberOfFiles = ((FolderProperties) Properties()).getContainingXFiles(), altIndex=0;
-        TreeNode[] aFiles = new TreeNode[numberOfFiles-1];
-        for(int index=0;index < numberOfFiles;index++)
-            if (this.files[index].getUserObject() != file)
-                aFiles[altIndex++] = this.files[index];
-        this.files = aFiles;
         Properties().setSize(Properties().Size() - file.Properties().Size());
-        Folder parent = parentFolder;
+        Folder parent = (Folder) super.parent;
         while (parent != null)
         {
             parent.Properties().setSize(parent.Properties().Size() - file.Properties().Size());
             ((FolderProperties) parent.Properties()).setSpace(((FolderProperties) parent.Properties()).getSpace() + file.Properties().Size());
             if (file instanceof Folder)
                 ((FolderProperties) parent.Properties()).setSpace(((FolderProperties) parent.Properties()).getSpace() + ((FolderProperties)file.Properties()).getSpace());
-            parent = parent.parentFolder;
+            parent = (Folder) parent.parent;
         }
         ((FolderProperties) Properties()).setSpace(((FolderProperties) Properties()).getSpace() + file.Properties().Size());
         if (file instanceof Folder)
             ((FolderProperties) Properties()).setSpace(((FolderProperties) Properties()).getSpace() + ((FolderProperties)file.Properties()).getSpace());
         ((FolderProperties) Properties()).setContainingXFiles(numberOfFiles+1);
-    }
-
-    public Folder getParentFolder()
-    {
-        return this.parentFolder;
     }
 
     /*public void newFolder(String folderName, double freeSpace)
@@ -187,4 +169,9 @@ public class Folder extends File {
         return newStringBuilder.toString();
     }
     */
+    @Override
+    public String toString()
+    {
+        return super.toString() + " " + ((FolderProperties) Properties()).getSpace();
+    }
 }

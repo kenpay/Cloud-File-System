@@ -11,7 +11,7 @@ interface FileInterface
     double Size();
 }
 
-public class File implements FileInterface, Serializable {
+public class File extends DefaultMutableTreeNode implements FileInterface, Serializable {
     public File()
     {
 
@@ -47,8 +47,7 @@ public class File implements FileInterface, Serializable {
 
     public File(int id, double size, String Name)
     {
-        this.id = id;
-        this.properties = new Properties(size, Name);
+        this(id, new Properties(size, Name));
     }
 
 
@@ -77,7 +76,7 @@ public class File implements FileInterface, Serializable {
     @Override
     public String toString()
     {
-        return properties.getName();
+        return properties.getName() + " " + properties.getSize();
     }
 
 }

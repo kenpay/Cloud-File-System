@@ -25,12 +25,12 @@ public class User {
         return this.name;
     }
 
-    public int getId()
+    /*public int getId()
     {
         return  this.id;
-    }
+    }*/
 
-
+/*
     //Aceaste este metoda Factory <= de observat ca daca un user se afla deja in lista va intoarce o referinta catre acesta
     //Folosita numai pentru a genera useri din fisier
     public static User createUser(int id, String userName)
@@ -40,4 +40,5 @@ public class User {
         generatorId = id+1;
         return user;
     }
+    */
 }

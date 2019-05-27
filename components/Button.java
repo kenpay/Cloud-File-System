@@ -12,9 +12,8 @@ public class Button extends JButton {
     public Button(String Name, MainFrame MainFrame, JLabel ErrorLabel, JTextField IPAddressTextFiles)
     {
         super(Name);
-        buttonActionListener = new ButtonActionListener(MainFrame, this, ErrorLabel, IPAddressTextFiles);
+        buttonActionListener = new ButtonActionListener(MainFrame, ErrorLabel, IPAddressTextFiles);
         setBounds(460, 485, 120, 40);
         addActionListener(buttonActionListener);
     }
-
 }

@@ -7,8 +7,8 @@ import java.io.Serializable;
 interface PropertiesInterface
 {
     void Rename(String Name);
-    void ChangeSize(double value);
-    Permissions Permissions();
+    //void ChangeSize(double value);
+    //Permissions Permissions();
     double Size();
 }
 
@@ -57,4 +57,6 @@ public class Properties implements PropertiesInterface, Serializable {
     public void Rename(String Name) { this.name = Name; }
 
     public Permissions Permissions() { return permissions; }
+
+    public double getSize() { return this.size; }
 }
