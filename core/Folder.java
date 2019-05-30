@@ -10,6 +10,14 @@ public class Folder extends File {
 
     public ArrayList<File> getSelectedFiles() { return selectedFiles;}
 
+    public boolean contains(String name)
+    {
+        for (File file:files)
+            if (file.Properties().getName().equals(name))
+                return true;
+        return false;
+    }
+
     public Folder(String folderName, double fSpace)
     {
         super(new FolderProperties(0, folderName, fSpace));

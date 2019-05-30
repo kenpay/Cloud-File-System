@@ -53,6 +53,8 @@ public class Main {
                                             changeParentFor(line.substring(15));
                                         else if (line.startsWith("remove"))
                                             remove(line.substring(6));
+                                        else if (line.startsWith("rename"))
+                                            rename(line.substring(6));
 
                                         socketWriter.flush();
                                     }
@@ -71,6 +73,22 @@ public class Main {
             catch (IOException e)
             {
                 System.err.println(e.getMessage());
+            }
+        }
+
+        private void rename(String type)
+        {
+            String[] what = type.split(":"), properties = what[1].split(",");
+            if (conn != null)
+            {
+                try(Statement stmt = conn.createStatement())
+                {
+                    stmt.executeUpdate("UPDATE " + what[0].toLowerCase() +"s SET Name='"+properties[1]+"' WHERE Id="+properties[0]);
+                }
+                catch(SQLException e)
+                {
+                    System.err.println(e.getMessage());
+                }
             }
         }
 

@@ -24,6 +24,12 @@ public class ClientSocket extends Socket {
         return clientSocket;
     }
 
+    public void renameElement(File file)
+    {
+        socketWriter.println("rename"+file.getClass().getSimpleName()+":"+file.getId()+","+file.Properties().getName());
+        socketWriter.flush();
+    }
+
 
     public void removeElement(File file)
     {
@@ -104,36 +110,36 @@ public class ClientSocket extends Socket {
             configurationDrive = new Drive(Integer.parseInt(configuration[0]), configuration[1], Double.parseDouble(configuration[2]));
             OperationManager.setConfiguration(configurationDrive);
             FileManager.setCurrentTarget(configurationDrive);
-
             drives = fileSystem[1].split(";");
-            if (!drives[0].equals(""))
-
+            if (!drives[0].equals("")) {
                 for (String drive : drives) {
                     String[] driveProperties = drive.split("\\.");
                     Drive driveToCreate = new Drive(Integer.parseInt(driveProperties[0]), driveProperties[1], Double.parseDouble(driveProperties[2]));
                     configurationDrive.addFile(driveToCreate);
                 }
 
-            folders = fileSystem[2].split(";");
-            if (!folders[0].equals(""))
+                if (fileSystem.length>2) {
+                    folders = fileSystem[2].split(";");
+                    if (!folders[0].equals(""))
+                        for (String folder : folders) {
+                            String[] folderProperties = folder.split("\\.");
+                            Folder folderIn = OperationManager.getFolderById(Integer.parseInt(folderProperties[2]));
+                            if (folderIn != null)
+                                folderIn.addFile(new Folder(Integer.parseInt(folderProperties[0]), folderProperties[1], Double.parseDouble(folderProperties[3])));
 
-                for (String folder : folders) {
-                    String[] folderProperties = folder.split("\\.");
-                    Folder folderIn = OperationManager.getFolderById(Integer.parseInt(folderProperties[2]));
-                    if (folderIn != null)
-                        folderIn.addFile(new Folder(Integer.parseInt(folderProperties[0]), folderProperties[1], Double.parseDouble(folderProperties[3])));
-
+                        }
+                    if (fileSystem.length > 3) {
+                        files = fileSystem[3].split(";");
+                        if (!files[0].equals(""))
+                            for (String file : files) {
+                                String[] fileProperties = file.split("\\.");
+                                Folder folderIn = OperationManager.getFolderById(Integer.parseInt(fileProperties[3]));
+                                if (folderIn != null)
+                                    folderIn.addFile(new my.fileManager.core.File(Integer.parseInt(fileProperties[0]), Double.parseDouble(fileProperties[2]), fileProperties[1]));
+                            }
+                    }
                 }
-
-            files = fileSystem[3].split(";");
-            if (!files[0].equals(""))
-                for (String file : files) {
-                    String[] fileProperties = file.split("\\.");
-                    Folder folderIn = OperationManager.getFolderById(Integer.parseInt(fileProperties[3]));
-                    if (folderIn != null)
-                        folderIn.addFile(new my.fileManager.core.File(Integer.parseInt(fileProperties[0]), Double.parseDouble(fileProperties[2]), fileProperties[1]));
-                }
-
+            }
         }
 
     }

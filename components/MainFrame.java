@@ -7,6 +7,7 @@ import my.fileManager.core.Folder;
 import my.fileManager.core.FolderProperties;
 import my.fileManager.managers.FileManager;
 import my.fileManager.managers.OperationManager;
+import sun.nio.cs.ext.EUC_JP_Open;
 
 import javax.swing.*;
 import java.awt.*;
@@ -137,13 +138,13 @@ public class MainFrame extends JFrame {
         FileManager.setCurrentTarget(OperationManager.getConfigatuion());
         JButton addUser = new JButton("Add User");
         int yToDraw = 10;
-        addUser.setBounds(width-120, yToDraw, 100, 20);
-        yToDraw += 30;
+        addUser.setBounds(width-120, yToDraw, 100, 30);
+        yToDraw += 40;
         JButton createButton = new JButton("Create");
-        createButton.setBounds(width-120, yToDraw, 100, 20);
-        yToDraw += 30;
+        createButton.setBounds(width-120, yToDraw, 100, 30);
+        yToDraw += 40;
         currentTargetPath = new JTextField(120);
-        currentTargetPath.setBounds(0, 0, width-130, 32);
+        currentTargetPath.setBounds(0, 0, width-130, 30);
         currentTargetPath.setEnabled(false);
         JPanel panel = new JPanel();
         panel.setLayout(null);
@@ -175,7 +176,11 @@ public class MainFrame extends JFrame {
         JButton pasteButton = new JButton("Paste");
         pasteButton.setBounds(width-120, yToDraw, 100, 30);
         pasteButton.setEnabled(false);
-        ActionListener copyCutRemovePasteActionLister = e -> {
+        yToDraw += 40;
+        JButton renameButton = new JButton("Rename");
+        renameButton.setBounds(width-120, yToDraw, 100, 30);
+        renameButton.setEnabled(false);
+        ActionListener actionLister = e -> {
             Object source = e.getSource();
             Folder currentTarget = FileManager.getCurrentTarget();
             if (source == copyButton || source == cutButton)
@@ -194,6 +199,13 @@ public class MainFrame extends JFrame {
                     File selectedFile = currentTarget.getSelectedFiles().get(0);
                     currentTarget.remove(selectedFile);
                     ClientSocket.getInstance().removeElement(selectedFile);
+                }
+                else if (source == renameButton)
+                {
+                    File selectedFile = currentTarget.getSelectedFiles().get(0);
+                    String newName = JOptionPane.showInputDialog("Enter new name:");
+                    selectedFile.Rename(newName);
+                    ClientSocket.getInstance().renameElement(selectedFile);
                 }
                 else
                 {
@@ -227,10 +239,11 @@ public class MainFrame extends JFrame {
                 repaint();
             }
         };
-        cutButton.addActionListener(copyCutRemovePasteActionLister);
-        copyButton.addActionListener(copyCutRemovePasteActionLister);
-        removeButton.addActionListener(copyCutRemovePasteActionLister);
-        pasteButton.addActionListener(copyCutRemovePasteActionLister);
+        cutButton.addActionListener(actionLister);
+        copyButton.addActionListener(actionLister);
+        removeButton.addActionListener(actionLister);
+        pasteButton.addActionListener(actionLister);
+        renameButton.addActionListener(actionLister);
         backButton.addActionListener(e -> {
             Folder  currentTarget = FileManager.getCurrentTarget(),
                     parent = currentTarget.getFileParent();
@@ -241,6 +254,12 @@ public class MainFrame extends JFrame {
             }
             if (cutButton.isEnabled())
                 cutButton.setEnabled(false);
+            if (copyButton.isEnabled())
+                copyButton.setEnabled(false);
+            if (removeButton.isEnabled())
+                removeButton.setEnabled(false);
+            if(renameButton.isEnabled())
+                renameButton.setEnabled(false);
         });
         openButton.addActionListener(e -> {
             setCurrentTargetPath((Folder) (FileManager.getCurrentTarget().getSelectedFiles()).get(0));
@@ -251,6 +270,12 @@ public class MainFrame extends JFrame {
             openButton.setEnabled(false);
             if (cutButton.isEnabled())
                 cutButton.setEnabled(false);
+            if (copyButton.isEnabled())
+                copyButton.setEnabled(false);
+            if (removeButton.isEnabled())
+                removeButton.setEnabled(false);
+            if (renameButton.isEnabled())
+                renameButton.setEnabled(false);
         });
         addUser.addActionListener(e -> createUser());
         currentTargetPath.setText(FileManager.getCurrentTarget().Properties().getName());
@@ -267,6 +292,8 @@ public class MainFrame extends JFrame {
                     copyButton.setEnabled(false);
                 if (removeButton.isEnabled())
                     removeButton.setEnabled(false);
+                if (renameButton.isEnabled())
+                    renameButton.setEnabled(false);
             }
         });
         fileSystem.addMouseListener(new MouseAdapter()
@@ -293,6 +320,8 @@ public class MainFrame extends JFrame {
                                 copyButton.setEnabled(false);
                             if (removeButton.isEnabled())
                                 removeButton.setEnabled(false);
+                            if (renameButton.isEnabled())
+                                renameButton.setEnabled(false);
                         }
                     }
                 }
@@ -310,6 +339,8 @@ public class MainFrame extends JFrame {
                             copyButton.setEnabled(true);
                         if (!removeButton.isEnabled())
                             removeButton.setEnabled(true);
+                        if (!renameButton.isEnabled())
+                            renameButton.setEnabled(true);
                         if (file instanceof Folder)
                         {
                             if (!openButton.isEnabled())
@@ -337,6 +368,8 @@ public class MainFrame extends JFrame {
                             copyButton.setEnabled(false);
                         if (removeButton.isEnabled())
                             removeButton.setEnabled(false);
+                        if (removeButton.isEnabled())
+                            renameButton.setEnabled(false);
                         FileManager.getCurrentTarget().deselectAll();
                     }
                 }
@@ -358,6 +391,7 @@ public class MainFrame extends JFrame {
         add(copyButton);
         add(removeButton);
         add(pasteButton);
+        add(renameButton);
         remove(connectButton);
         remove(ipAddressTextField);
         remove(enterIpAddressLabel);

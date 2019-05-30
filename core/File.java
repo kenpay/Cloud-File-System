@@ -58,7 +58,12 @@ public class File extends JLabel implements Serializable {
 
     public void Rename(String Name)
     {
-        properties.Rename(Name);
+        if (parent.contains(Name))
+            Rename(Name+1);
+        else {
+            properties.Rename(Name);
+            setText(Name);
+        }
     }
 
     public int getId()
