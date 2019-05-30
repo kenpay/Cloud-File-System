@@ -7,6 +7,7 @@ Cloud File System is a file system with client-server communication and a databa
 Client: ![Client](https://i.ibb.co/cYT5bXV/file-System.png)
 User panel: ![UsersPanel](https://i.ibb.co/6wWb1Hb/users-Panel.png)
 Initial: ![Initial](https://i.ibb.co/z2qNH12/initial-Capture.png)
+Partial: ![Initial](https://i.ibb.co/7NfFCxY/wtf.png)
 
 Server -> databaseConnection
 Client -> Server
@@ -16,19 +17,21 @@ Future update : Client synchronization
 
 Client has a graphical representation of file system and can do several action.
 
-Features:
-Login
-Future:
-  Administration
+###Features:
+####Login
+####Control view of actual folder
 
-File actions permitted:
--Copy
--Cut
--Paste
--Create
-Future:
--Rename
--Permissions
+###Actions
+####Copy
+####Cut
+####Paste
+####Create
+####Rename
+###Future
+####Permissions
+####Shourtcuts
+####Administration ( Users )
+####Multiple view types
 
 File subdivisions : File, Folder, Drive.
 
