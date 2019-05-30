@@ -1,6 +1,6 @@
  # Cloud File System
 
-Cloud File System is a file system with client-server communication and a database connection.
+## Cloud File System is a a storage file-system based on client-server communication and database connection.
 
 ## Getting Started
 
@@ -9,42 +9,37 @@ User panel: ![UsersPanel](https://i.ibb.co/6wWb1Hb/users-Panel.png)
 Initial: ![Initial](https://i.ibb.co/z2qNH12/initial-Capture.png)
 Partial: ![Initial](https://i.ibb.co/7NfFCxY/wtf.png)
 
-Server -> databaseConnection
-Client -> Server
+### Server process informations from and to database and eventually transfer them to client and is used as storage.
 
-Server processes informations from and to database and eventually transfer them to client and is used as storage.
+### Client has a graphical representation of file system and can do several action which are managed by server.
 
-Client has a graphical representation of file system and can do several action.
+### File System subdivison logic: File is contained by Folder, which is contained by Drive.
 
 ### Features:
 #### Login
 #### Control view of actual folder
-#### Actions
-##### Copy
-##### Cut
-##### Paste
-##### Create
-##### Rename
-#### Future
-##### Client synchronization (IMPORTANT!)
-##### Permissions
-##### Shourtcuts
-##### Administration ( Users )
-##### Multiple view types
+#### Actions:
+##### -Copy
+##### -Cut
+##### -Paste
+##### -Create
+##### -Rename
+#### Future:
+##### -Client synchronization (IMPORTANT!)
+##### -Permissions
+##### -Shourtcuts
+##### -Administration ( Users )
+##### -Multiple view types
+##### -Server storage
 
-### File subdivisions: 
-#### File
-#### Folder
-#### Drive
-
-### New
+### Properties
 ```
-A folder has space property, which means that a folder can storage up to a maximum value.
+Space, which is the maximum vale a folder can storage.
+```
+```
+There can be files with same name in a folder.
 ```
 
-```
-In a folder/drive there can be files with same name
-```
 
 ### Prerequisites
 
@@ -75,5 +70,3 @@ See also the list of [contributors](https://github.com/kenpay/cloud-file-system/
 ## Acknowledgments
 
 Computer Science Project
-                     
-                     
