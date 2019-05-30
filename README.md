@@ -25,9 +25,13 @@ File subdivisions : File, Folder, Drive.
 NEW: A folder has space property, which means that a folder can storage up to a maximum value.
 
 Structure exemple:
-              Configuration ( Total space: <- Actually a Drive )
-           Drive        Drive
-      Folder    File  Folder  Folder
-                     File       File
+Configuration: ( Total space: <- Actually a Drive )
+  Drive:
+    Folder
+    File
+  Drive:
+    Folder:
+      File
+     File
                      
                      
