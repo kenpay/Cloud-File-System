@@ -1,42 +1,30 @@
 package my.fileManager.core;
 
-import javax.swing.tree.DefaultMutableTreeNode;
+
+import my.fileManager.managers.ResourceManager;
+
+import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.Serializable;
 
+public class File extends JLabel implements Serializable {
 
-interface FileInterface
-{
-    void Rename(String Name);
-    Properties Properties();
-    double Size();
-}
-
-public class File extends DefaultMutableTreeNode implements FileInterface, Serializable {
-    public File()
-    {
-
-    }
-
-    static int generatorId = 0;
-    private int id;
+    private static int generatorId = 0;
     private Properties properties;
+    private int id;
+    protected Folder parent;
+
+
+    public Folder getFileParent()
+    {
+        return this.parent;
+    }
 
     File(Properties properties)
     {
-        this.id = generatorId++;
-        this.properties = properties;
+        this(generatorId, properties);
     }
-
-    /*public void setParentFolder(Folder folder)
-    {
-        this.parentFolder = folder;
-    }
-
-    public Folder getParentFolder()
-    {
-        return this.parentFolder;
-    }
-    */
 
     public File(double size, String Name)
     {
@@ -53,9 +41,15 @@ public class File extends DefaultMutableTreeNode implements FileInterface, Seria
 
     File(int id, Properties properties)
     {
+        super(properties.getName());
+        this.properties = properties;
         this.id = id;
         generatorId = id+1;
-        this.properties = properties;
+        setIcon(ResourceManager.getFileIcon());
+        setOpaque(true);
+        setHorizontalTextPosition(File.CENTER);
+        setVerticalTextPosition(File.BOTTOM);
+        setHorizontalAlignment(File.CENTER);
     }
 
     public void Rename(String Name)

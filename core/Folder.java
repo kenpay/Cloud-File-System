@@ -1,93 +1,79 @@
 package my.fileManager.core;
 
+import my.fileManager.Sockets.ClientSocket;
+import my.fileManager.components.Tree;
+import my.fileManager.managers.ResourceManager;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Vector;
 
 public class Folder extends File {
-    //private TreeNode[] files;
-    //private Folder parentFolder;
+    private ArrayList<File> files = new ArrayList<>(), selectedFiles = new ArrayList<>();
 
-    /*
-    public Folder(FolderProperties properties, File[] fil)
-    {
-        super(properties);
-        this.files = fil;
-        ((FolderProperties) Properties()).containingXFiles(fil.length);
-    }
-
-    private Folder(FolderProperties properties)
-    {
-        super(properties);
-        ((FolderProperties) Properties()).containingXFiles (0);
-    }
-
-    public Folder(double fSize, String fPath, double fSpace, File[] fil)
-    {
-        super(new FolderProperties(fSize, fPath, fSpace));
-        this.files = fil;
-    }*/
+    public ArrayList<File> getSelectedFiles() { return selectedFiles;}
 
     public Folder(String folderName, double fSpace)
     {
         super(new FolderProperties(0, folderName, fSpace));
-        //this.files = new TreeNode[0];
-        //((FolderProperties) Properties()).setContainingXFiles(0);
+        setIcon(ResourceManager.getFolderIcon());
+        //allowsChildren = true;
+    }
+
+    private void deselectFile(File file)
+    {
+        file.setBackground(Color.GRAY);
+        file.setForeground(Color.black);
+        file.repaint();
+        selectedFiles.remove(file);
+    }
+
+    public void selectFile(File file)
+    {
+        if (selectedFiles.contains(file))
+            deselectFile(file);
+        else
+        {
+            file.setForeground(Color.GREEN);
+            file.setBackground(Color.CYAN);
+            selectedFiles.add(file);
+        }
+    }
+
+    public void deselectAll()
+    {
+        int size = selectedFiles.size();
+        for (int index=size-1; index >= 0; index--)
+            deselectFile(selectedFiles.get(index));
     }
 
 
     public Folder(int id, String folderName, double fSpace)
     {
         super(id, new FolderProperties(0, folderName, fSpace));
-        //this.files = new TreeNode[0];
-        //((FolderProperties) Properties()).setContainingXFiles(0);
+        setIcon(ResourceManager.getFolderIcon());
     }
 
-    /*
-    public Folder searchFolder(String folderName)
+    public ArrayList<File> getFiles()
     {
-        for(File file:this.files)
-            if (file instanceof Folder)
-                if (file.Properties().getName().equals(folderName))
-                    return (Folder) file;
-        return null;
+        return files;
     }
 
-    public File searchFile(String fileName)
-    {
-        for(File file:this.files)
-            if(file.Properties().getName().equals(fileName))
-                return file;
-        return null;
-    }
-
-    public String getFilesId()
-    {
-        StringBuilder stringBuilder = new StringBuilder();
-        for(File file: files)
-            stringBuilder.append(file.getId()).append(';');
-        return stringBuilder.toString();
-    }
-    */
-
-    /*public TreeNode[] getFiles()
-    {
-        return this.files;
-    }
-
-    public Folder()
-    {
-        super();
-    }*/
-
-    public Vector getChildren()
+    /*public Vector getChildren()
     {
         return children;
-    }
+    }*/
 
     private void add(File file)
     {
-        super.add(file);
+        //super.add(file);
+        file.parent = this;
+        file.Properties().setPath(Properties().getPath()+Properties().getName()+'/');
         int numberOfFiles = ((FolderProperties) Properties()).getContainingXFiles();
-        //file.Properties().setPath(Properties().getPath()+Properties().getName()+'/'); TreeSelectionPath ?
         Properties().setSize(Properties().Size() + file.Properties().Size());
         Folder parent = (Folder) super.parent;
         while (parent != null)
@@ -102,25 +88,20 @@ public class Folder extends File {
         if (file instanceof Folder)
             ((FolderProperties) Properties()).setSpace(((FolderProperties) Properties()).getSpace() - ((FolderProperties)file.Properties()).getSpace());
         ((FolderProperties) Properties()).setContainingXFiles(numberOfFiles+1);
+        files.add(file);
     }
 
-    public void addFile(File file)
+    public void addFile(File file) throws Exception
     {
-        if (file instanceof Folder) {
-            if ((((FolderProperties) file.Properties()).getSpace() <= ((FolderProperties) Properties()).getSpace()))
-                add(file);
-            else
-                System.out.println("Not enough space.");
-        }
-        else if (((FolderProperties)Properties()).getSpace() - file.Properties().Size() >= 0)
+        if ((file instanceof Folder && ((((FolderProperties) file.Properties()).getSpace() <= ((FolderProperties) Properties()).getSpace()))) || ((((FolderProperties)Properties()).getSpace() - file.Properties().Size() >= 0)))
             add(file);
         else
-            System.out.println("Not enough space.");
+            throw new Exception("Not enough memory");
     }
 
     public void remove(File file)
     {
-        super.remove(file);
+        //super.remove(file);
         int numberOfFiles = ((FolderProperties) Properties()).getContainingXFiles(), altIndex=0;
         Properties().setSize(Properties().Size() - file.Properties().Size());
         Folder parent = (Folder) super.parent;
@@ -136,39 +117,9 @@ public class Folder extends File {
         if (file instanceof Folder)
             ((FolderProperties) Properties()).setSpace(((FolderProperties) Properties()).getSpace() + ((FolderProperties)file.Properties()).getSpace());
         ((FolderProperties) Properties()).setContainingXFiles(numberOfFiles+1);
+        files.remove(file);
     }
 
-    /*public void newFolder(String folderName, double freeSpace)
-    {
-        add(new Folder(0, folderName, freeSpace));
-    }
-
-    public void newFile(String fileName, double fileSize)
-    {
-        add(new File(fileSize,fileName));
-    }*/
-    /*
-    @Override
-    public String toString()
-    {
-        StringBuilder newStringBuilder = new StringBuilder();
-        newStringBuilder.append("Folder path: ");
-        newStringBuilder.append(Properties().getPath());
-        newStringBuilder.append("\nContaining ");
-        newStringBuilder.append(((FolderProperties) Properties()).getContainingXFiles());
-        newStringBuilder.append("\n");
-        for (TreeNode fileT:this.files) {
-            File file = (File) fileT.getUserObject();
-            newStringBuilder.append("Path: ");
-            newStringBuilder.append(file.Properties().getPath());
-            newStringBuilder.append(file.Properties().getName());
-            newStringBuilder.append("\t");
-            newStringBuilder.append((file instanceof Folder ? "Folder":"File"));
-            newStringBuilder.append('\n');
-        }
-        return newStringBuilder.toString();
-    }
-    */
     @Override
     public String toString()
     {

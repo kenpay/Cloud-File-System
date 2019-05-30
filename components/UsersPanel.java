@@ -25,8 +25,8 @@ public class UsersPanel extends JDialog {
         super(MainFrame, Title, modal);
         setResizable(false);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Pair dialogSize = new Pair(screenSize.width/2, screenSize.height/2);
-        setBounds(screenSize.width/4, screenSize.height/4, screenSize.width/2,dialogSize.Y/2+210);
+        Pair dialogSize = new Pair(screenSize.width/4, screenSize.height/4);
+        setBounds(screenSize.width/3, screenSize.height/3, screenSize.width/4,dialogSize.Y/2+210);
         setLayout(null);
         JLabel selectUser = new JLabel("Select user:");
         selectUser.setBounds(10, 0, dialogSize.X-30, 32);
@@ -55,13 +55,12 @@ public class UsersPanel extends JDialog {
                         if (clientSocket.getPasswordForUser(selectedValue).equals(new String(passwordField.getPassword())))
                         {
                             clientSocket.getFileSystem();
-                            MainFrame.displayFileSystem();
                             UsersPanel.this.dispose();
                         }
                         else
                             errorLabel.setText("Login Failed!");
                     }
-                    catch (NoSuchElementException ex)
+                    catch (Exception ex)
                     {
                         MainFrame.connectionLost();
                         UsersPanel.this.dispose();
@@ -83,6 +82,6 @@ public class UsersPanel extends JDialog {
 
     public static void display(MainFrame Parent)
     {
-        new UsersPanel(Parent, "Users Panel", true);
+        JDialog dialog = new UsersPanel(Parent, "Users Panel", true);
     }
 }

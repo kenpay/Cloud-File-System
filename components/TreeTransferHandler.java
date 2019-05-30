@@ -13,11 +13,9 @@ import java.io.IOException;
 public class TreeTransferHandler extends TransferHandler
 {
     private Tree filesTree;
-    private MainFrame mainFrame;
 
-    public TreeTransferHandler(Tree Tree, MainFrame MainFrame)
+    public TreeTransferHandler(Tree Tree)
     {
-        mainFrame = MainFrame;
         filesTree = Tree;
     }
 
@@ -37,7 +35,7 @@ public class TreeTransferHandler extends TransferHandler
         JTree.DropLocation dropLocation = (JTree.DropLocation) support.getDropLocation();
         TreePath treePath = dropLocation.getPath();
         Transferable dropped = support.getTransferable();
-        File node = null;
+        File node;
         try{
             node = (File) dropped.getTransferData(DataFlavor.stringFlavor);
         }
@@ -54,9 +52,8 @@ public class TreeTransferHandler extends TransferHandler
         ((Folder) node.getParent()).remove(node);
         File selectedNode = (File) treePath.getLastPathComponent();
         selectedNode.add(node);
-        mainFrame.repaint();
-        filesTree.repaint();
         return true;
+
     }
 
     public int getSourceActions(JComponent c) {

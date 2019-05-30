@@ -4,15 +4,7 @@ import my.fileManager.core.Permissions;
 
 import java.io.Serializable;
 
-interface PropertiesInterface
-{
-    void Rename(String Name);
-    //void ChangeSize(double value);
-    //Permissions Permissions();
-    double Size();
-}
-
-public class Properties implements PropertiesInterface, Serializable {
+public class Properties implements Serializable {
     private double size;
     private String name, path;
     private Permissions permissions;
@@ -29,7 +21,7 @@ public class Properties implements PropertiesInterface, Serializable {
         return this.name;
     }
 
-    String getPath()
+    public String getPath()
     {
         return this.path;
     }

@@ -8,14 +8,14 @@ public class FileManager {
 
     private static File clipboardFile;
 
-    static String currentTarget()
+    public static void setCurrentTarget(Folder folder)
     {
-        return currentTarget.toString();
+        currentTarget = folder;
     }
 
-    public static void currentTarget(Folder target)
+    public static Folder getCurrentTarget()
     {
-        currentTarget = target;
+        return currentTarget;
     }
 
     /*

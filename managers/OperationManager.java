@@ -75,12 +75,7 @@ public class OperationManager {
             {
                 if (folder.getId() == id)
                     return (Folder) folder;
-                Vector children = ((Folder) folder).getChildren();
-                ArrayList<File> arrayList = new ArrayList<>();
-                for (Object child:children)
-                    if (child instanceof File)
-                        arrayList.add((File) child);
-                queue.addAll(arrayList);
+                queue.addAll(((Folder) folder).getFiles());
             }
         }
         return null;

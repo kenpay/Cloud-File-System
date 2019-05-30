@@ -1,7 +1,7 @@
 package my.fileManager.Sockets;
 
-import my.fileManager.core.Drive;
-import my.fileManager.core.Folder;
+import my.fileManager.core.*;
+import my.fileManager.managers.FileManager;
 import my.fileManager.managers.OperationManager;
 
 import javax.swing.*;
@@ -23,6 +23,13 @@ public class ClientSocket extends Socket {
         return clientSocket;
     }
 
+
+    public void createDatabaseElemenet(File file)
+    {
+        socketWriter.println("create"+file.getClass().getSimpleName()+":"+file.getId()+','+file.Properties().getName()+','+file.Properties().Size()+','+((file.Properties() instanceof FolderProperties)?((FolderProperties) file.Properties()).getSpace():"")+','+
+                file.getFileParent().getId());
+        socketWriter.flush();
+    }
 
     //Create only it doesn't exists....
     public static void createInstance(InetAddress address, int port) throws IOException
@@ -69,7 +76,7 @@ public class ClientSocket extends Socket {
         socketWriter.flush();
     }
 
-    public void getFileSystem()
+    public void getFileSystem() throws Exception
     {
 
         socketWriter.println("getFileSystem");
@@ -81,6 +88,7 @@ public class ClientSocket extends Socket {
             configuration = fileSystem[0].split(";");
             Drive configurationDrive = new Drive(Integer.parseInt(configuration[0]), configuration[1], Double.parseDouble(configuration[2]));
             OperationManager.setConfiguration(configurationDrive);
+            FileManager.setCurrentTarget(configurationDrive);
 
             if (fileSystem.length > 1)
             {
@@ -89,7 +97,6 @@ public class ClientSocket extends Socket {
                     String[] driveProperties = drive.split("\\.");
                     Drive driveToCreate = new Drive(Integer.parseInt(driveProperties[0]), driveProperties[1], Double.parseDouble(driveProperties[2]));
                     configurationDrive.addFile(driveToCreate);
-                    OperationManager.addToStorage(driveToCreate);
                 }
                 if (fileSystem.length > 2)
                 {
@@ -108,7 +115,7 @@ public class ClientSocket extends Socket {
                             String[] fileProperties = file.split("\\.");
                             Folder folderIn = OperationManager.getFolderById(Integer.parseInt(fileProperties[3]));
                             if (folderIn != null)
-                                ((Folder) folderIn.getUserObject()).addFile(new my.fileManager.core.File(Integer.parseInt(fileProperties[0]), Double.parseDouble(fileProperties[2]), fileProperties[1]));
+                                folderIn.addFile(new my.fileManager.core.File(Integer.parseInt(fileProperties[0]), Double.parseDouble(fileProperties[2]), fileProperties[1]));
                         }
                     }
                 }

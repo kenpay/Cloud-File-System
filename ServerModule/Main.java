@@ -47,6 +47,7 @@ public class Main {
                                             createUser(line.substring(11), socketWriter);
                                         else if (line.equals("getFileSystem"))
                                             getFileSystem(socketWriter);
+                                        //else if (line.equals("createFile"))
                                         socketWriter.flush();
                                     }
                                     System.out.println("Disconnected: " + serverClientSocket.getInetAddress());
