@@ -13,27 +13,29 @@ Server -> databaseConnection
 Client -> Server
 
 Server processes informations from and to database and eventually transfer them to client and is used as storage.
-Future update : Client synchronization
 
 Client has a graphical representation of file system and can do several action.
 
-###Features:
-####Login
-####Control view of actual folder
+### Features:
+#### Login
+#### Control view of actual folder
+#### Actions
+##### Copy
+##### Cut
+##### Paste
+##### Create
+##### Rename
+#### Future
+##### Client synchronization (IMPORTANT!)
+##### Permissions
+##### Shourtcuts
+##### Administration ( Users )
+##### Multiple view types
 
-###Actions
-####Copy
-####Cut
-####Paste
-####Create
-####Rename
-###Future
-####Permissions
-####Shourtcuts
-####Administration ( Users )
-####Multiple view types
-
-File subdivisions : File, Folder, Drive.
+### File subdivisions: 
+#### File
+#### Folder
+#### Drive
 
 ### New
 ```
@@ -46,8 +48,8 @@ In a folder/drive there can be files with same name
 
 ### Prerequisites
 
-####JDBC mysql connector
-####database connection
+#### JDBC mysql connector
+#### database connection
 
 ```
 I personally use xampp for database connection
