@@ -7,6 +7,7 @@ Cloud File System is a file system with client-server communication and a databa
 Client: ![Client](https://i.ibb.co/cYT5bXV/file-System.png)
 User panel: ![UsersPanel](https://i.ibb.co/6wWb1Hb/users-Panel.png)
 Initial: ![Initial](https://i.ibb.co/z2qNH12/initial-Capture.png)
+Partial: ![Initial](https://i.ibb.co/7NfFCxY/wtf.png)
 
 Server -> databaseConnection
 Client -> Server
