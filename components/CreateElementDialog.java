@@ -16,6 +16,8 @@ import java.awt.event.MouseEvent;
 public class CreateElementDialog extends JDialog
 {
 
+    private static JDialog dialog;
+
     private void showCreateElementDialog(String type, Folder selectedNode)
     {
         String fileName = JOptionPane.showInputDialog("Enter " + type + " name: ");
@@ -46,7 +48,7 @@ public class CreateElementDialog extends JDialog
         }
         else
             JOptionPane.showMessageDialog(this, "Invalid name!");
-        CreateElementDialog.this.dispose();
+        CreateElementDialog.this.setVisible(false);
     }
 
     private CreateElementDialog(MainFrame parent)
@@ -58,6 +60,8 @@ public class CreateElementDialog extends JDialog
         layout.setVgap(40);
         imagesLayout.setHgap(40);
         JLabel label = new JLabel("Select what you want to create:");
+        label.setVerticalAlignment(JLabel.CENTER);
+        label.setHorizontalAlignment(JLabel.CENTER);
         JPanel panel = new JPanel(imagesLayout);
         JLabel file = new JLabel("File");
         file.setIcon(ResourceManager.getFileIcon());
@@ -92,9 +96,10 @@ public class CreateElementDialog extends JDialog
         setVisible(true);
     }
 
-
     public static void display(MainFrame parent)
     {
-        JDialog dialog = new CreateElementDialog(parent);
+        if (dialog == null || dialog.getParent() != parent)
+            dialog = new CreateElementDialog(parent);
+        dialog.setVisible(true);
     }
 }

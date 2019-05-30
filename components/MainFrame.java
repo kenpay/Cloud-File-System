@@ -382,6 +382,7 @@ public class MainFrame extends JFrame {
         });
         nothingLabel = new JLabel("Nothing");
         nothingLabel.setHorizontalAlignment(JLabel.CENTER);
+        nothingLabel.setVerticalAlignment(JLabel.CENTER);
         add(scrollPane);
         add(createButton);
         add(addUser);
