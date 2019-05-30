@@ -4,6 +4,10 @@ Cloud File System is a file system with client-server communication and a databa
 
 ## Getting Started
 
+Client: ![Client](https://i.ibb.co/cYT5bXV/file-System.png)
+User panel: ![UsersPanel](https://i.ibb.co/6wWb1Hb/users-Panel.png)
+Initial: ![Initial](https://i.ibb.co/z2qNH12/initial-Capture.png)
+
 Server -> databaseConnection
 Client -> Server
 
@@ -41,10 +45,10 @@ I personally use xampp for database connection
 
 ## Running
 
-### Start server module.
-### Connect with a client to server. ( i.e. : localhost )
-### Create user
-### Enjoy yourself!
+### -Start server module.
+### -Connect with a client to server. ( i.e. : localhost )
+### -Create user
+### -Enjoy yourself!
 
 
 ## Authors
