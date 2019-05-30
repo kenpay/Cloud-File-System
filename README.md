@@ -50,7 +50,7 @@ I personally use xampp for database connection
 ```
 
 
-## Running
+## Installing
 
 ### -Start server module.
 ### -Connect with a client to server. ( i.e. : localhost )
