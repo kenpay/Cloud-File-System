@@ -16,19 +16,21 @@ Future update : Client synchronization
 
 Client has a graphical representation of file system and can do several action.
 
-Features:
-Login
-Future:
-  Administration
+###Features:
+####Login
+####Control view of actual folder
 
-File actions permitted:
--Copy
--Cut
--Paste
--Create
-Future:
--Rename
--Permissions
+###Actions
+####Copy
+####Cut
+####Paste
+####Create
+####Rename
+###Future
+####Permissions
+####Shourtcuts
+####Administration ( Users )
+####Multiple view types
 
 File subdivisions : File, Folder, Drive.
 
