@@ -8,7 +8,7 @@ Server -> databaseConnection
 Client -> Server
 
 Server processes informations from and to database and eventually transfer them to client and is used as storage.
-Future update : ClientsSynchronization
+Future update : Client synchronization
 
 Client has a graphical representation of file system and can do several action.
 
@@ -32,14 +32,19 @@ NEW: A folder has space property, which means that a folder can storage up to a 
 
 ### Prerequisites
 
--database connection (I personally use xampp for database connection)
+database connection
 
-### Running
+```
+I personally use xampp for database connection
+```
 
-1)Start server module.
-2)Connect with a client to server. ( i.e. : localhost )
-3)Create user
-4)
+
+## Running
+
+### Start server module.
+### Connect with a client to server. ( i.e. : localhost )
+### Create user
+### Enjoy yourself!
 
 
 ## Authors
