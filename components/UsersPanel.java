@@ -1,12 +1,14 @@
 package my.fileManager.components;
 
 import my.fileManager.Sockets.ClientSocket;
+import my.fileManager.core.Drive;
+import my.fileManager.managers.FileManager;
+import my.fileManager.managers.OperationManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.NoSuchElementException;
 
 public class UsersPanel extends JDialog {
 
@@ -20,9 +22,9 @@ public class UsersPanel extends JDialog {
         }
     }
 
-    public UsersPanel(MainFrame MainFrame, String Title, boolean modal)
+    public UsersPanel(MainFrame mainFrame, String Title, boolean modal) throws Exception
     {
-        super(MainFrame, Title, modal);
+        super(mainFrame, Title, modal);
         setResizable(false);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Pair dialogSize = new Pair(screenSize.width/4, screenSize.height/4);
@@ -30,7 +32,16 @@ public class UsersPanel extends JDialog {
         setLayout(null);
         JLabel selectUser = new JLabel("Select user:");
         selectUser.setBounds(10, 0, dialogSize.X-30, 32);
-        JList<String> listToDisplay = new JList<>(ClientSocket.getInstance().getUsers()); // NoSuchElementException
+        DefaultListModel<String> users = ClientSocket.getInstance().getUsers();
+        if (users.size() == 0)
+        {
+            JOptionPane.showMessageDialog(this, "No users found. Please create one!");
+            String user = MainFrame.createUser();
+            if (user == null)
+                throw new Exception("Invalid user!");
+            users.addElement(user);
+        }
+        JList<String> listToDisplay = new JList<>(users);
         listToDisplay.setBounds(10, 32, dialogSize.X - 33, dialogSize.Y/2);
         JLabel enterPasswordLabel = new JLabel("Enter password:");
         enterPasswordLabel.setBounds(10, 38+dialogSize.Y/2, dialogSize.X-30, 32);
@@ -55,6 +66,23 @@ public class UsersPanel extends JDialog {
                         if (clientSocket.getPasswordForUser(selectedValue).equals(new String(passwordField.getPassword())))
                         {
                             clientSocket.getFileSystem();
+                            if (OperationManager.getConfigatuion() == null)
+                            {
+                                JOptionPane.showMessageDialog(UsersPanel.this, "No configuration found. Please configure your system!");
+
+                                    try
+                                    {
+                                        double configurationSpace = Double.parseDouble(JOptionPane.showInputDialog("Enter configuration space:"));
+                                        Drive configuration = new Drive("Total space", configurationSpace);
+                                        ClientSocket.getInstance().createDatabaseElement(configuration);
+                                        OperationManager.setConfiguration(configuration);
+                                        FileManager.setCurrentTarget(configuration);
+                                    }
+                                    catch(Exception exception)
+                                    {
+                                            JOptionPane.showMessageDialog(UsersPanel.this, "Invalid number!");
+                                    }
+                            }
                             UsersPanel.this.dispose();
                         }
                         else
@@ -62,7 +90,7 @@ public class UsersPanel extends JDialog {
                     }
                     catch (Exception ex)
                     {
-                        MainFrame.connectionLost();
+                        mainFrame.connectionLost();
                         UsersPanel.this.dispose();
                     }
                 }
@@ -80,7 +108,7 @@ public class UsersPanel extends JDialog {
         setVisible(true);
     }
 
-    public static void display(MainFrame Parent)
+    public static void display(MainFrame Parent) throws Exception
     {
         JDialog dialog = new UsersPanel(Parent, "Users Panel", true);
     }

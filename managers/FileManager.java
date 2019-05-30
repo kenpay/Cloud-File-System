@@ -5,12 +5,28 @@ import my.fileManager.core.Folder;
 
 public class FileManager {
     private static Folder currentTarget;
-
     private static File clipboardFile;
+    private static String action;
+
+    public static void setAction(String Action)
+    {
+        action = Action;
+    }
+
+    public static String getAction() {return action;}
 
     public static void setCurrentTarget(Folder folder)
     {
         currentTarget = folder;
+    }
+
+    public static void setClipboard(File file) {
+        clipboardFile = file;
+    }
+
+    public static File getClipboardFile()
+    {
+        return clipboardFile;
     }
 
     public static Folder getCurrentTarget()

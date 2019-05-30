@@ -44,10 +44,16 @@ public class Main {
                                         else if (line.startsWith("getPasswordForUser"))
                                             getPasswordForUser(line.substring(19), socketWriter);
                                         else if (line.startsWith("createUser"))
-                                            createUser(line.substring(11), socketWriter);
+                                            createUser(line.substring(11));
                                         else if (line.equals("getFileSystem"))
                                             getFileSystem(socketWriter);
-                                        //else if (line.equals("createFile"))
+                                        else if (line.startsWith("create"))
+                                            createElement(line.substring(6));
+                                        else if (line.startsWith("changeParentFor"))
+                                            changeParentFor(line.substring(15));
+                                        else if (line.startsWith("remove"))
+                                            remove(line.substring(6));
+
                                         socketWriter.flush();
                                     }
                                     System.out.println("Disconnected: " + serverClientSocket.getInetAddress());
@@ -68,17 +74,123 @@ public class Main {
             }
         }
 
-        private void createUser(String userInformations, PrintWriter socketWriter)
+        private void remove(String table, int id)
+        {
+            if (conn != null)
+            {
+                try(Statement stmt = conn.createStatement())
+                {
+                    stmt.executeUpdate("DELETE FROM " + table + " WHERE Id="+id);
+                }
+                catch(SQLException e)
+                {
+                    System.err.println(e.getMessage());
+                }
+            }
+        }
+
+        private void remove(String type)
+        {
+            String[] what = type.split(":");
+            remove(what[0]+"s", Integer.parseInt(what[1]));
+        }
+
+        private void update(String table, int id, int parentId)
+        {
+            if (conn != null)
+            {
+                try(Statement stmt = conn.createStatement())
+                {
+                    stmt.executeUpdate("UPDATE " + table + " SET ParentFolderId="+parentId+" WHERE Id="+id);
+                }
+                catch(SQLException e)
+                {
+                    System.err.println(e.getMessage());
+                }
+            }
+        }
+
+        private void changeParentFor(String element)
+        {
+            String[] what = element.split(":");
+            what[0] = what[0].toLowerCase();
+            String[] properties = what[1].split(",");
+            int id = Integer.parseInt(properties[0]), parentId = Integer.parseInt(properties[1]);
+            update(what[0]+"s", id, parentId);
+        }
+
+        private void createFile(int id, String name, double size, int parentIdFolder)
+        {
+            if (conn != null)
+            {
+                try(Statement stmt = conn.createStatement())
+                {
+                    stmt.executeUpdate("INSERT INTO files(Id, Name, Size, ParentFolderId) VALUES ("+id+",'"+name+"',"+size+","+parentIdFolder+");");
+                }
+                catch(SQLException e)
+                {
+                    System.err.println(e.getMessage());
+                }
+            }
+        }
+
+        private void createFolder(int id, String name, double space, int parentIdFolder)
+        {
+            if (conn != null)
+            {
+                try(Statement stmt = conn.createStatement())
+                {
+                    stmt.executeUpdate("INSERT INTO folders(Id, Name, ParentFolderId, Space) VALUES ("+id+",'"+name+"',"+parentIdFolder+"," +space+");");
+                }
+                catch(SQLException e)
+                {
+                    System.err.println(e.getMessage());
+                }
+            }
+        }
+
+        private void createDrive(int id, String name, double space)
+        {
+            if (conn != null)
+            {
+                try(Statement stmt = conn.createStatement())
+                {
+                    stmt.executeUpdate("INSERT INTO drives(Id, Name, Space) VALUES ("+id+",'"+name+"'," +space+");");
+                }
+                catch(SQLException e)
+                {
+                    System.err.println(e.getMessage());
+                }
+            }
+        }
+
+        private void createElement(String element)
+        {
+            String[] what = element.split(":");
+            what[0] = what[0].toLowerCase();
+            String[] properties = what[1].split(",");
+            int id = Integer.parseInt(properties[0]), parentId = Integer.parseInt(properties[4]);
+            String name = properties[1];
+            if (what[0].equals("file"))
+                createFile(id, name, Double.parseDouble(properties[2]), parentId);
+            else
+            {
+                double space = Double.parseDouble(properties[3]);
+                if(what[0].equals("folder"))
+                    createFolder(id, name, space, parentId);
+                else
+                    createDrive(id, name, space);
+            }
+        }
+
+        private void createUser(String userInformations)
         {
             if (conn != null)
             {
                 try(Statement stmt = conn.createStatement())
                 {
                     String[] userDetails = userInformations.split(":");
-                    ResultSet resultSet = stmt.executeQuery("select password from users where name = '" + userInformations + "'");
-                    StringBuilder stringBuilder = new StringBuilder();
-                    if(resultSet.next())
-                        socketWriter.println(resultSet.getString(1));
+                    stmt.executeUpdate("INSERT INTO users(Name, Password) values ('" + userDetails[0] + "', '" + userDetails[1] + "')");
                 }
                 catch(SQLException e)
                 {
@@ -106,7 +218,7 @@ public class Main {
         }
 
         private void getUsers(PrintWriter socketWriter)
-        {
+        {//Not supported
             if (conn != null)
             {
                 try(Statement stmt = conn.createStatement())
@@ -137,14 +249,15 @@ public class Main {
                     try(Statement stmt = conn.createStatement())
                     {
                         ResultSet resultSet = stmt.executeQuery("select * from drives;");
+                        StringBuilder stringBuilder = new StringBuilder();
 
-                        if (resultSet.next())
-                        {
-                            StringBuilder stringBuilder = new StringBuilder();
+                        if (resultSet.next()) {
                             stringBuilder.append(resultSet.getInt(1)).append(';');
                             stringBuilder.append(resultSet.getString(2)).append(';');
-                            stringBuilder.append(resultSet.getFloat(3)).append("-"); // THIS WILL BE THE CONFIGURATION
+                            stringBuilder.append(resultSet.getFloat(3)); // THIS WILL BE THE CONFIGURATION
+                        }
                             // ALWAYS WILL HAVE ID 0
+                        stringBuilder.append('-');
 
 
                             while (resultSet.next()) {
@@ -171,7 +284,6 @@ public class Main {
 
                             socketWriter.println(stringBuilder.toString());
                         }
-                    }
                     catch (SQLException e)
                     {
                         System.err.println(e.getMessage());

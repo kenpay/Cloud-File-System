@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 27, 2019 at 10:29 PM
+-- Generation Time: May 30, 2019 at 04:48 PM
 -- Server version: 10.1.37-MariaDB
 -- PHP Version: 5.6.40
 
@@ -33,15 +33,6 @@ CREATE TABLE `drives` (
   `name` varchar(65) NOT NULL,
   `space` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `drives`
---
-
-INSERT INTO `drives` (`id`, `name`, `space`) VALUES
-(0, 'Total space:', 20000),
-(1, 'FirstDrive', 5000),
-(2, 'ThirdDrive', 3000);
 
 -- --------------------------------------------------------
 
@@ -79,15 +70,8 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `Name` varchar(32) NOT NULL,
   `Password` varchar(64) NOT NULL,
-  `Permissions` tinyint(4) NOT NULL
+  `Permissions` tinyint(4) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`id`, `Name`, `Password`, `Permissions`) VALUES
-(1, 'Alcholistu', 'T3l3grama', 1);
 
 --
 -- Indexes for dumped tables
@@ -137,7 +121,7 @@ ALTER TABLE `folders`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

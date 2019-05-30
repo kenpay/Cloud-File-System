@@ -4,6 +4,7 @@ import my.fileManager.managers.ResourceManager;
 import java.io.Serializable;
 
 public class Drive extends Folder implements Serializable {
+
     public Drive(String name, double space)
     {
         super(name, space);

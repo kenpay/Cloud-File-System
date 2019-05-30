@@ -34,7 +34,7 @@ public class CreateElementDialog extends JDialog
                     fileToAdd = new Drive(fileName, fileSize);
                 selectedNode.addFile(fileToAdd);
                 ((MainFrame) getParent()).redisplayFileSystem();
-                ClientSocket.getInstance().createDatabaseElemenet(fileToAdd);
+                ClientSocket.getInstance().createDatabaseElement(fileToAdd);
             }
             catch(Exception exception)
             {
@@ -53,6 +53,7 @@ public class CreateElementDialog extends JDialog
     {
         super(parent, "Create...", true);
         setSize(600, 400);
+        setResizable(false);
         GridLayout layout = new GridLayout(2, 1), imagesLayout = new GridLayout(1, 3);
         layout.setVgap(40);
         imagesLayout.setHgap(40);
@@ -75,8 +76,10 @@ public class CreateElementDialog extends JDialog
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                 JLabel selected = (JLabel) panel.getComponentAt(e.getX(), e.getY());
-                 showCreateElementDialog(selected.getText().toLowerCase(), FileManager.getCurrentTarget());
+                Component object = panel.getComponentAt(e.getX(), e.getY());
+                if (object instanceof JLabel)
+                    if (object.isEnabled())
+                    showCreateElementDialog(((JLabel) object).getText().toLowerCase(), FileManager.getCurrentTarget());
             }
         };
         panel.addMouseListener(mouseAdapter);

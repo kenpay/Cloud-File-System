@@ -67,7 +67,7 @@ public class OperationManager {
     //BFS
     public static Folder getFolderById(int id)
     {
-        Queue<File> queue = new LinkedList<>(drives);
+        Queue<File> queue = new LinkedList<>(configuration.getFiles());
         while (!queue.isEmpty())
         {
             File folder = queue.remove();

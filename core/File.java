@@ -38,6 +38,10 @@ public class File extends JLabel implements Serializable {
         this(id, new Properties(size, Name));
     }
 
+    public File(File file)
+    {
+        this(file.properties.Size(), file.properties.getName());
+    }
 
     File(int id, Properties properties)
     {

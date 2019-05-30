@@ -4,13 +4,13 @@ import my.fileManager.Sockets.ClientSocket;
 import my.fileManager.core.Drive;
 import my.fileManager.core.File;
 import my.fileManager.core.Folder;
+import my.fileManager.core.FolderProperties;
 import my.fileManager.managers.FileManager;
 import my.fileManager.managers.OperationManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -19,9 +19,9 @@ import java.util.ArrayList;
 public class MainFrame extends JFrame {
     private JTextField ipAddressTextField, currentTargetPath;
     private JButton connectButton;
-    private JLabel errorLabel, enterIpAddressLabel;
+    private JLabel errorLabel, enterIpAddressLabel, nothingLabel;
     private JPanel fileSystem;
-    private int width, height;
+    private int width, height, rows;
 
     public MainFrame()
     {
@@ -76,23 +76,29 @@ public class MainFrame extends JFrame {
     }
 
 
-    private int rows=0;
-
     public void redisplayFileSystem()
     {
         ArrayList<File> files = FileManager.getCurrentTarget().getFiles();
         int filesSize = files.size();
+        GridLayout layout = (GridLayout) fileSystem.getLayout();
         if ((filesSize+1)/3 != rows)
         {
             rows = (filesSize+1)/3;
-            GridLayout layout = (GridLayout) fileSystem.getLayout();
             layout.setRows(rows);
         }
+        int columns = 3;
+        if (filesSize<3 && filesSize > 0)
+            columns = filesSize;
+        if (layout.getColumns() != columns)
+            layout.setColumns(columns);
+
         fileSystem.removeAll();
         for(File file:files)
             fileSystem.add(file);
         if (filesSize == 0)
-            fileSystem.add(new JLabel("Nothing"));
+            fileSystem.add(nothingLabel);
+        Folder path = FileManager.getCurrentTarget();
+        currentTargetPath.setText(path.Properties().getPath()+path.Properties().getName()+":"+((FolderProperties)path.Properties()).getSpace());
         revalidate();
     }
 
@@ -100,12 +106,33 @@ public class MainFrame extends JFrame {
     {
         FileManager.getCurrentTarget().deselectAll();
         FileManager.setCurrentTarget(path);
-        currentTargetPath.setText(path.Properties().getPath()+path.Properties().getName());
+        currentTargetPath.setText(path.Properties().getPath()+path.Properties().getName()+":"+((FolderProperties)path.Properties()).getSpace());
         redisplayFileSystem();
         repaint();
     }
 
-    public void displayFileSystem()
+    public static String createUser()
+    {
+        String name = JOptionPane.showInputDialog("Username:");
+        String password;
+        if (name != null && name.length() > 3)
+        {
+            password = JOptionPane.showInputDialog("Password:");
+            if (password != null && password.length() > 3)
+                try
+                {
+                    ClientSocket.getInstance().createUser(name, password);
+                    return name;
+                }
+            catch (Exception e)
+            {
+                System.err.println("Connection problems");
+            }
+        }
+        return null;
+    }
+
+    private void displayFileSystem()
     {
         FileManager.setCurrentTarget(OperationManager.getConfigatuion());
         JButton addUser = new JButton("Add User");
@@ -122,39 +149,110 @@ public class MainFrame extends JFrame {
         panel.setLayout(null);
         fileSystem = new JPanel(new GridLayout(1, 3));
         fileSystem.setBounds(0, 32, width-130, height);
+        fileSystem.setBackground(Color.GRAY);
         panel.add(currentTargetPath);
         panel.add(fileSystem);
         JButton openButton = new JButton("Open");
-        openButton.setBounds(width-120, yToDraw, 100, 20);
-        yToDraw += 30;
+        openButton.setBounds(width-120, yToDraw, 100, 30);
+        yToDraw += 40;
         openButton.setEnabled(false);
         JButton backButton = new JButton("Back");
-        backButton.setBounds(width-120, yToDraw, 100, 20);
+        backButton.setBounds(width-120, yToDraw, 100, 30);
+        yToDraw += 40;
         backButton.setEnabled(false);
+        JButton cutButton = new JButton("Cut");
+        cutButton.setBounds(width-120, yToDraw, 100, 30);
+        yToDraw += 40;
+        cutButton.setEnabled(false);
+        JButton copyButton = new JButton("Copy");
+        copyButton.setBounds(width-120, yToDraw, 100, 30);
+        copyButton.setEnabled(false);
+        yToDraw += 40;
+        JButton removeButton = new JButton("Remove");
+        removeButton.setBounds(width-120, yToDraw, 100, 30);
+        removeButton.setEnabled(false);
+        yToDraw += 40;
+        JButton pasteButton = new JButton("Paste");
+        pasteButton.setBounds(width-120, yToDraw, 100, 30);
+        pasteButton.setEnabled(false);
+        ActionListener copyCutRemovePasteActionLister = e -> {
+            Object source = e.getSource();
+            Folder currentTarget = FileManager.getCurrentTarget();
+            if (source == copyButton || source == cutButton)
+            {
+                FileManager.setClipboard(currentTarget.getSelectedFiles().get(0));
+                String action = "Copy";
+                if (source == cutButton)
+                    action = "Cut";
+                FileManager.setAction(action);
+                pasteButton.setEnabled(true);
+            }
+            else
+            {
+                if (source == removeButton)
+                {
+                    File selectedFile = currentTarget.getSelectedFiles().get(0);
+                    currentTarget.remove(selectedFile);
+                    ClientSocket.getInstance().removeElement(selectedFile);
+                }
+                else
+                {
+                    String Action = FileManager.getAction();
+                    File fileToCreate, clipboardFile = FileManager.getClipboardFile();
+                    if (Action.equals("Copy"))
+                    {
+                        if (clipboardFile instanceof Folder)
+                            fileToCreate = new Folder((Folder)clipboardFile);
+                        else
+                            fileToCreate = new File(clipboardFile);
+                    }
+                    else
+                        fileToCreate = clipboardFile;
+                    try
+                    {
+                        currentTarget.addFile(fileToCreate);
+                        if (Action.equals("Copy"))
+                            ClientSocket.getInstance().createDatabaseElement(fileToCreate);
+                        else
+                            ClientSocket.getInstance().changeParentForElement(fileToCreate);
+                        pasteButton.setEnabled(false);
+                        FileManager.setClipboard(null);
+                    }
+                    catch (Exception exception)
+                    {
+                        JOptionPane.showMessageDialog(MainFrame.this, "Not enough memory!");
+                    }
+                }
+                redisplayFileSystem();
+                repaint();
+            }
+        };
+        cutButton.addActionListener(copyCutRemovePasteActionLister);
+        copyButton.addActionListener(copyCutRemovePasteActionLister);
+        removeButton.addActionListener(copyCutRemovePasteActionLister);
+        pasteButton.addActionListener(copyCutRemovePasteActionLister);
         backButton.addActionListener(e -> {
             Folder  currentTarget = FileManager.getCurrentTarget(),
                     parent = currentTarget.getFileParent();
             setCurrentTargetPath(parent);
-            if (parent.getFileParent() == null)
+            if (parent.getFileParent() == null) {
                 backButton.setEnabled(false);
+                pasteButton.setEnabled(false);
+            }
+            if (cutButton.isEnabled())
+                cutButton.setEnabled(false);
         });
         openButton.addActionListener(e -> {
             setCurrentTargetPath((Folder) (FileManager.getCurrentTarget().getSelectedFiles()).get(0));
             if (!backButton.isEnabled())
                 backButton.setEnabled(true);
+            if (!pasteButton.isEnabled() && FileManager.getClipboardFile() != null)
+                pasteButton.setEnabled(true);
             openButton.setEnabled(false);
+            if (cutButton.isEnabled())
+                cutButton.setEnabled(false);
         });
-        addUser.addActionListener(e -> {
-            String name = JOptionPane.showInputDialog("Username:");
-            String password;
-            if (name != null && name.length() > 3)
-            {
-                password = JOptionPane.showInputDialog("Password:");
-                if (password != null && password.length() > 3)
-                    ClientSocket.getInstance().createUser(name, password);
-            }
-
-        });
+        addUser.addActionListener(e -> createUser());
         currentTargetPath.setText(FileManager.getCurrentTarget().Properties().getName());
         addMouseListener(new MouseAdapter() {
             @Override
@@ -163,6 +261,12 @@ public class MainFrame extends JFrame {
                 currentTarget.deselectAll();
                 if (openButton.isEnabled())
                     openButton.setEnabled(false);
+                if (cutButton.isEnabled())
+                    cutButton.setEnabled(false);
+                if (copyButton.isEnabled())
+                    copyButton.setEnabled(false);
+                if (removeButton.isEnabled())
+                    removeButton.setEnabled(false);
             }
         });
         fileSystem.addMouseListener(new MouseAdapter()
@@ -171,10 +275,26 @@ public class MainFrame extends JFrame {
             {
                 if (e.getClickCount() == 2)
                 {
-                    setCurrentTargetPath((Folder) (FileManager.getCurrentTarget().getSelectedFiles()).get(0));
-                    if (!backButton.isEnabled())
-                        backButton.setEnabled(true);
-                    openButton.setEnabled(false);
+                    ArrayList<File> selectedFiles = FileManager.getCurrentTarget().getSelectedFiles();
+                    if (selectedFiles.size() > 0)
+                    {
+                        File selectedFile = (FileManager.getCurrentTarget().getSelectedFiles()).get(0);
+                        if (selectedFile instanceof Folder)
+                        {
+                            setCurrentTargetPath((Folder) selectedFile);
+                            if (!backButton.isEnabled())
+                                backButton.setEnabled(true);
+                            if (!pasteButton.isEnabled() && FileManager.getClipboardFile() != null)
+                                pasteButton.setEnabled(true);
+                            openButton.setEnabled(false);
+                            if (cutButton.isEnabled())
+                                cutButton.setEnabled(false);
+                            if (copyButton.isEnabled())
+                                copyButton.setEnabled(false);
+                            if (removeButton.isEnabled())
+                                removeButton.setEnabled(false);
+                        }
+                    }
                 }
                 else
                 {
@@ -184,26 +304,42 @@ public class MainFrame extends JFrame {
                         Folder currentTarget = FileManager.getCurrentTarget();
                         currentTarget.deselectAll();
                         currentTarget.selectFile(file);
+                        if (!cutButton.isEnabled())
+                            cutButton.setEnabled(true);
+                        if (!copyButton.isEnabled())
+                            copyButton.setEnabled(true);
+                        if (!removeButton.isEnabled())
+                            removeButton.setEnabled(true);
                         if (file instanceof Folder)
                         {
                             if (!openButton.isEnabled())
                                 openButton.setEnabled(true);
+                            if (file instanceof Drive)
+                            {
+                                if (cutButton.isEnabled())
+                                    cutButton.setEnabled(false);
+                                if (copyButton.isEnabled())
+                                    copyButton.setEnabled(false);
+                                if (removeButton.isEnabled())
+                                    removeButton.setEnabled(false);
+                            }
                         }
                         else if (openButton.isEnabled())
-                            openButton.setEnabled(false);
+                                openButton.setEnabled(false);
                     }
                     catch (Exception e1)
                     {
-                        openButton.setEnabled(false);
+                        if (openButton.isEnabled())
+                            openButton.setEnabled(false);
+                        if (cutButton.isEnabled())
+                            cutButton.setEnabled(false);
+                        if (copyButton.isEnabled())
+                            copyButton.setEnabled(false);
+                        if (removeButton.isEnabled())
+                            removeButton.setEnabled(false);
+                        FileManager.getCurrentTarget().deselectAll();
                     }
                 }
-            }
-            public void mouseReleased(MouseEvent e)
-            {
-                /*
-                if (e.isPopupTrigger())
-                    rightClick.show((Component) e.getSource(), e.getX(), e.getY());
-              */
             }
         });
         JScrollPane scrollPane = new JScrollPane(panel);
@@ -211,16 +347,21 @@ public class MainFrame extends JFrame {
         createButton.addActionListener(e -> {
             CreateElementDialog.display(MainFrame.this);
         });
+        nothingLabel = new JLabel("Nothing");
+        nothingLabel.setHorizontalAlignment(JLabel.CENTER);
         add(scrollPane);
         add(createButton);
         add(addUser);
         add(openButton);
         add(backButton);
+        add(cutButton);
+        add(copyButton);
+        add(removeButton);
+        add(pasteButton);
         remove(connectButton);
         remove(ipAddressTextField);
         remove(enterIpAddressLabel);
         remove(errorLabel);
         redisplayFileSystem();
-
     }
 }

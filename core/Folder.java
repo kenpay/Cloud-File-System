@@ -1,16 +1,9 @@
 package my.fileManager.core;
 
-import my.fileManager.Sockets.ClientSocket;
-import my.fileManager.components.Tree;
 import my.fileManager.managers.ResourceManager;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Vector;
 
 public class Folder extends File {
     private ArrayList<File> files = new ArrayList<>(), selectedFiles = new ArrayList<>();
@@ -22,6 +15,17 @@ public class Folder extends File {
         super(new FolderProperties(0, folderName, fSpace));
         setIcon(ResourceManager.getFolderIcon());
         //allowsChildren = true;
+    }
+
+    public Folder(Folder folder)
+    {
+        super(new FolderProperties(folder.Properties().getSize(), folder.Properties().getName(), ((FolderProperties)folder.Properties()).getSpace()));
+        setIcon(ResourceManager.getFolderIcon());
+        for(File file:folder.files)
+            if (file instanceof Folder)
+                files.add(new Folder((Folder) file));
+            else
+                files.add(new File(file));
     }
 
     private void deselectFile(File file)
@@ -71,8 +75,11 @@ public class Folder extends File {
     private void add(File file)
     {
         //super.add(file);
+        if (file.parent != null)
+            file.parent.remove(file);
         file.parent = this;
-        file.Properties().setPath(Properties().getPath()+Properties().getName()+'/');
+        if (getId() != 0)
+            file.Properties().setPath(Properties().getPath()+Properties().getName()+'/');
         int numberOfFiles = ((FolderProperties) Properties()).getContainingXFiles();
         Properties().setSize(Properties().Size() + file.Properties().Size());
         Folder parent = (Folder) super.parent;
