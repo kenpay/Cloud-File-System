@@ -32,7 +32,14 @@ Future:
 
 File subdivisions : File, Folder, Drive.
 
-NEW: A folder has space property, which means that a folder can storage up to a maximum value.
+### New
+```
+A folder has space property, which means that a folder can storage up to a maximum value.
+```
+
+```
+In a folder/drive there can be files with same name
+```
 
 ### Prerequisites
 
