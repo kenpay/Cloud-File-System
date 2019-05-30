@@ -43,7 +43,8 @@ In a folder/drive there can be files with same name
 
 ### Prerequisites
 
-database connection
+####JDBC mysql connector
+####database connection
 
 ```
 I personally use xampp for database connection
@@ -52,6 +53,8 @@ I personally use xampp for database connection
 
 ## Installing
 
+### -First of all you need to change path in ServerModule Main for your database
+### -Change the path of the image in ResourceManager
 ### -Start server module.
 ### -Connect with a client to server. ( i.e. : localhost )
 ### -Create user
