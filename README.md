@@ -13,7 +13,7 @@ Partial: ![Initial](https://i.ibb.co/7NfFCxY/wtf.png)
 
 ### Client has a graphical representation of file system and can do several action which are managed by server.
 
-### File System subdivison logic: File is contained by Folder, which is contained by Drive.
+### Cloud File System subdivison logic: File is contained by Folder, which is contained by Drive.
 
 ### Features:
 #### Login
@@ -31,6 +31,7 @@ Partial: ![Initial](https://i.ibb.co/7NfFCxY/wtf.png)
 ##### -Administration ( Users )
 ##### -Multiple view types
 ##### -Server storage
+##### -Youtube installing guide
 
 ### Properties
 ```
